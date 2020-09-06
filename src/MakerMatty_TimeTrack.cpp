@@ -15,7 +15,7 @@ TimeTrack::TimeTrack()
  * @brief Local (object) timeMs_g tracking
  * @param currentTime Current timeUs when creating this obbject
  */
-TimeTrack::TimeTrack(time_ms initial)
+TimeTrack::TimeTrack(const time_ms initial)
     : paused_(false)
 {
     setTime(initial);
@@ -25,7 +25,7 @@ TimeTrack::TimeTrack(time_ms initial)
  * @brief Get current local (object) timeMs_g in miliseconds. 1s = 1000ms
  * @return number of miliseconds based on when setTime_g() was called
  */
-time_ms /*IRAM_ATTR*/ TimeTrack::time()
+const time_ms /*IRAM_ATTR*/ TimeTrack::time() const
 {
     return paused_ ? (time_ms)(memory_ / 1000LL) : (time_ms)((esp_timer_get_time() - memory_) / 1000LL);
 }
@@ -34,7 +34,7 @@ time_ms /*IRAM_ATTR*/ TimeTrack::time()
  * @brief Get current local (object) timeMs_g in microseconds. 1s = 1000000ms
  * @return number of microseconds based on when setTime() was called
  */
-time_us /*IRAM_ATTR*/ TimeTrack::timeUs()
+const time_us /*IRAM_ATTR*/ TimeTrack::timeUs() const
 {
     return paused_ ? (time_us)memory_ : (time_us)(esp_timer_get_time() - memory_);
 }
@@ -64,7 +64,7 @@ void TimeTrack::unpause()
 /**
 * @brief Set the local (object) timeMs_g in ms. 1s = 1000ms
 */
-void TimeTrack::setTime(time_ms current)
+void TimeTrack::setTime(const time_ms current)
 {
     memory_ = paused_ ? ((int64_t)current * 1000LL) : (esp_timer_get_time() - ((int64_t)current * 1000LL));
 }
@@ -72,7 +72,7 @@ void TimeTrack::setTime(time_ms current)
 /**
 * @brief Set the local (object) timeMs_g in us. 1s = 1000000us
 */
-void TimeTrack::setTimeUs(time_us current)
+void TimeTrack::setTimeUs(const time_us current)
 {
     memory_ = paused_ ? (int64_t)current : (esp_timer_get_time() - (int64_t)current);
 }

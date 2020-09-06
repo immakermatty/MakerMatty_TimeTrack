@@ -21,12 +21,12 @@ typedef int64_t time_us;
 class TimeTrack {
 public:
     TimeTrack();
-    TimeTrack(time_ms initial);
+    TimeTrack(const time_ms initial);
 
-    time_ms time();
-    time_us timeUs();
-    void setTime(time_ms current);
-    void setTimeUs(time_us current);
+    const time_ms time() const;
+    const time_us timeUs() const;
+    void setTime(const time_ms current);
+    void setTimeUs(const time_us current);
     void pause();
     void unpause();
 
