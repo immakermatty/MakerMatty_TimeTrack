@@ -7,7 +7,7 @@
  */
 TimeTrack::TimeTrack()
     : paused_(false)
-      //, memory_(0)
+    , memory_(0)
     , freezed_(false)
     , freezedAt_(0)
 {
@@ -20,11 +20,19 @@ TimeTrack::TimeTrack()
  */
 TimeTrack::TimeTrack(const time_ms initial)
     : paused_(false)
-      //, memory_(0)
+    , memory_(0)
     , freezed_(false)
     , freezedAt_(0)
 {
     setTime(initial);
+}
+
+TimeTrack::TimeTrack(const TimeTrack& other)
+    : paused_(other.paused_)
+    , memory_(other.memory_)
+    , freezed_(other.freezed_)
+    , freezedAt_(other.freezedAt_)
+{
 }
 
 /**
@@ -36,7 +44,11 @@ const time_ms /*IRAM_ATTR*/ TimeTrack::time() const
     if (freezed_) {
         return (time_ms)(freezedAt_ / 1000LL);
     } else {
-        return paused_ ? (time_ms)(memory_ / 1000LL) : (time_ms)((esp_timer_get_time() - memory_) / 1000LL);
+        if (paused_) {
+            return (time_ms)(memory_ / 1000LL);
+        } else {
+            return (time_ms)((esp_timer_get_time() - memory_) / 1000LL);
+        }
     }
 }
 
@@ -49,7 +61,11 @@ const time_us /*IRAM_ATTR*/ TimeTrack::timeUs() const
     if (freezed_) {
         return (time_us)freezedAt_;
     } else {
-        return paused_ ? (time_us)memory_ : (time_us)(esp_timer_get_time() - memory_);
+        if (paused_) {
+            return (time_us)memory_;
+        } else {
+            return (time_us)(esp_timer_get_time() - memory_);
+        }
     }
 }
 

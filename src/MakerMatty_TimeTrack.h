@@ -22,6 +22,7 @@ class TimeTrack {
 public:
     TimeTrack();
     TimeTrack(const time_ms initial);
+    TimeTrack(const TimeTrack& other); // copy contructor
 
     const time_ms time() const;
     const time_us timeUs() const;
