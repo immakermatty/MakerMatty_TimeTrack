@@ -49,8 +49,8 @@ private:
 
     const TimeTrack* m_source;
 
+        int64_t m_memory;
     bool m_paused;
-    int64_t m_memory;
 };
 
 class FreezableTimeTrack : public TimeTrack {

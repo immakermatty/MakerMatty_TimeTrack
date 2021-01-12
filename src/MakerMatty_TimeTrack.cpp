@@ -2,13 +2,17 @@
 
 #include "MakerMatty_TimeTrack.h"
 
+const TimeTrack* m_source;
+int64_t m_memory;
+bool m_paused;
+
 /**
  * @brief Local (object) timeMs_g tracking
  */
 TimeTrack::TimeTrack()
-    : m_paused(false)
+    : m_source(nullptr)
     , m_memory(0)
-    , m_source(nullptr)
+    , m_paused(false)
 {
     setMillis(0);
 }
@@ -18,9 +22,9 @@ TimeTrack::TimeTrack()
  * @param currentTime Current micros when creating this obbject
  */
 TimeTrack::TimeTrack(const time_ms initial)
-    : m_paused(false)
+    : m_source(nullptr)
     , m_memory(0)
-    , m_source(nullptr)
+    , m_paused(false)
 {
     setMillis(initial);
 }
