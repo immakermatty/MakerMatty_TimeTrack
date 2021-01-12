@@ -6,117 +6,175 @@
  * @brief Local (object) timeMs_g tracking
  */
 TimeTrack::TimeTrack()
-    : paused_(false)
-    , memory_(0)
-    , freezed_(false)
-    , freezedAt_(0)
+    : m_paused(false)
+    , m_memory(0)
+    , m_source(nullptr)
 {
-    setTime(0);
+    setMillis(0);
 }
 
 /**
  * @brief Local (object) timeMs_g tracking
- * @param currentTime Current timeUs when creating this obbject
+ * @param currentTime Current micros when creating this obbject
  */
 TimeTrack::TimeTrack(const time_ms initial)
-    : paused_(false)
-    , memory_(0)
-    , freezed_(false)
-    , freezedAt_(0)
+    : m_paused(false)
+    , m_memory(0)
+    , m_source(nullptr)
 {
-    setTime(initial);
+    setMillis(initial);
 }
 
-TimeTrack::TimeTrack(const TimeTrack& other)
-    : paused_(other.paused_)
-    , memory_(other.memory_)
-    , freezed_(other.freezed_)
-    , freezedAt_(other.freezedAt_)
+// /**
+//  * @brief Copy contructor
+//  * @param other Other TimeTrack object to copy
+//  */
+// TimeTrack::TimeTrack(const TimeTrack& other)
+//     : m_paused(other.m_paused)
+//     , m_memory(other.m_memory)
+// {
+// }
+
+// /**
+//  * @brief Copy assignment
+//  * @param other Other TimeTrack object to copy
+//  */
+// TimeTrack& TimeTrack::operator=(TimeTrack other) noexcept
+// {
+//     m_paused = other.m_paused;
+//     m_memory = other.m_memory;
+//     return *this;
+// }
+
+void TimeTrack::attach(const TimeTrack& other)
 {
+    m_source = &other;
+}
+
+void TimeTrack::detach()
+{
+    m_source = nullptr;
 }
 
 /**
  * @brief Get current local (object) timeMs_g in miliseconds. 1s = 1000ms
  * @return number of miliseconds based on when setTime_g() was called
  */
-const time_ms /*IRAM_ATTR*/ TimeTrack::time() const
+const time_ms /*IRAM_ATTR*/ TimeTrack::millis() const
 {
-    if (freezed_) {
-        return (time_ms)(freezedAt_ / 1000LL);
+    if (m_paused) {
+        return (time_ms)(m_memory / 1000LL);
     } else {
-        if (paused_) {
-            return (time_ms)(memory_ / 1000LL);
-        } else {
-            return (time_ms)((esp_timer_get_time() - memory_) / 1000LL);
-        }
+        return (time_ms)((sourceMicros() - m_memory) / 1000LL);
     }
 }
 
 /**
  * @brief Get current local (object) timeMs_g in microseconds. 1s = 1000000ms
- * @return number of microseconds based on when setTime() was called
+ * @return number of microseconds based on when setMillis() was called
  */
-const time_us /*IRAM_ATTR*/ TimeTrack::timeUs() const
+const time_us /*IRAM_ATTR*/ TimeTrack::micros() const
 {
-    if (freezed_) {
-        return (time_us)freezedAt_;
+    if (m_paused) {
+        return (time_us)m_memory;
     } else {
-        if (paused_) {
-            return (time_us)memory_;
-        } else {
-            return (time_us)(esp_timer_get_time() - memory_);
-        }
+        return (time_us)(sourceMicros() - m_memory);
     }
 }
 
 /**
 * @brief Set the local (object) timeMs_g in ms. 1s = 1000ms
 */
-void TimeTrack::setTime(const time_ms current)
+void TimeTrack::setMillis(const time_ms timestamp)
 {
-    memory_ = paused_ ? ((int64_t)current * 1000LL) : (esp_timer_get_time() - ((int64_t)current * 1000LL));
+    m_memory = m_paused ? ((int64_t)timestamp * 1000LL) : (sourceMicros() - ((int64_t)timestamp * 1000LL));
 }
 
 /**
 * @brief Set the local (object) timeMs_g in us. 1s = 1000000us
 */
-void TimeTrack::setTimeUs(const time_us current)
+void TimeTrack::setMicros(const time_us timestamp)
 {
-    memory_ = paused_ ? (int64_t)current : (esp_timer_get_time() - (int64_t)current);
+    m_memory = m_paused ? (int64_t)timestamp : (sourceMicros() - (int64_t)timestamp);
 }
 
-
 /**
- * @brief Pauses the local (object) time.
+ * @brief Pauses the local (object) millis.
  */
 void TimeTrack::pause()
 {
-    if (!paused_) {
-        paused_ = true;
-        memory_ = esp_timer_get_time() - memory_;
+    if (!m_paused) {
+        m_memory = sourceMicros() - m_memory;
+        m_paused = true;
     }
 }
 
 /**
- * @brief Unpauses the local (object) time.
+ * @brief Unpauses the local (object) millis.
  */
 void TimeTrack::unpause()
 {
-    if (paused_) {
-        paused_ = false;
-        memory_ = esp_timer_get_time() - memory_;
+    if (m_paused) {
+        m_memory = sourceMicros() - m_memory;
+        m_paused = false;
     }
 }
 
-void TimeTrack::freeze()
+const time_us TimeTrack::sourceMicros() const
 {
-    freezed_ = true;
-    freezedAt_ = paused_ ? (time_us)memory_ : (time_us)(esp_timer_get_time() - memory_);
+    return (m_source != nullptr ? m_source->micros() : esp_timer_get_time());
 }
 
-void TimeTrack::unfreeze()
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////
+
+FreezableTimeTrack::FreezableTimeTrack()
+    : TimeTrack()
+    , m_freezed(false)
+    , m_freezedAt(0) {};
+
+/**
+ * @brief Get current local (object) timeMs_g in miliseconds. 1s = 1000ms
+ * @return number of miliseconds based on when setTime_g() was called
+ */
+const time_ms /*IRAM_ATTR*/ FreezableTimeTrack::millis() const
 {
-    freezed_ = false;
+    if (m_freezed) {
+        return (time_ms)(m_freezedAt / 1000LL);
+    } else {
+        return TimeTrack::millis();
+    }
+}
+
+/**
+ * @brief Get current local (object) timeMs_g in microseconds. 1s = 1000000ms
+ * @return number of microseconds based on when setMillis() was called
+ */
+const time_us /*IRAM_ATTR*/ FreezableTimeTrack::micros() const
+{
+    if (m_freezed) {
+        return (time_us)m_freezedAt;
+    } else {
+        return TimeTrack::micros();
+    }
+}
+
+/**
+ * @brief Freezes the local (object) millis.
+ */
+void FreezableTimeTrack::freeze()
+{
+    m_freezed = true;
+    m_freezedAt = TimeTrack::micros();
+}
+
+/**
+ * @brief Freezes the local (object) millis.
+ */
+void FreezableTimeTrack::unfreeze()
+{
+    m_freezed = false;
 }
 
 #endif
