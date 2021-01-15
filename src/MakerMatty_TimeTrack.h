@@ -13,12 +13,12 @@
 typedef int32_t time_ms;
 #define TIME_MS_MAX __INT32_MAX__
 #define TIME_MS_MIN __INT32_MIN__
-#define PRITIMEMS PRId
+#define PRITIMEMS PRId32
 
 typedef int64_t time_us;
 #define TIME_US_MAX __INT64_MAX__
 #define TIME_US_MIN __INT64_MIN__
-#define PRITIMEUS PRId
+#define PRITIMEUS PRId64
 
 class TimeTrack {
 public:
