@@ -132,6 +132,25 @@ void TimeTrack::sync(const TimeTrack& source)
     this->setMicros(source.micros());
 }
 
+
+/**
+ * @brief Synchronizes time with source TimeTrack. The time is not linked in any way tho
+ */
+void TimeTrack::sync(const time_ms timestamp)
+{
+    this->setMillis(timestamp);
+}
+
+/**
+ * @brief Synchronizes time with source TimeTrack. The time is not linked in any way tho
+ */
+void TimeTrack::sync(const time_us timestamp)
+{
+    this->setMicros(timestamp);
+}
+
+
+
 const time_us TimeTrack::sourceMicros() const
 {
     return (m_source != nullptr ? m_source->micros() : esp_timer_get_time());

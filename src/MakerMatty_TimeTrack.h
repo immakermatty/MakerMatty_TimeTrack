@@ -39,6 +39,8 @@ public:
     void unpause();
 
     void sync(const TimeTrack& source);
+    void sync(const time_ms timestamp);
+    void sync(const time_us timestamp);
 
     /**
 	 * @brief Is the timer paused?
