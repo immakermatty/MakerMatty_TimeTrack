@@ -124,6 +124,14 @@ void TimeTrack::unpause()
     }
 }
 
+/**
+ * @brief Synchronizes time with source TimeTrack. The time is not linked in any way tho
+ */
+void TimeTrack::sync(const TimeTrack& source)
+{
+    this->setMicros(source.micros());
+}
+
 const time_us TimeTrack::sourceMicros() const
 {
     return (m_source != nullptr ? m_source->micros() : esp_timer_get_time());
