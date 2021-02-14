@@ -28,7 +28,7 @@ public:
     // TimeTrack(const TimeTrack& other); // copy contructor
     // TimeTrack& TimeTrack::operator=(TimeTrack other) noexcept;
 
-    void attach(const TimeTrack& other);
+    void attach(const TimeTrack& source);
     void detach();
 
     const time_ms millis() const;
@@ -37,6 +37,8 @@ public:
     void setMicros(const time_us timestamp);
     void pause();
     void unpause();
+
+    void sync(const TimeTrack& source);
 
     /**
 	 * @brief Is the timer paused?
