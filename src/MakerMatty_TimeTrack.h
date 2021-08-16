@@ -11,14 +11,40 @@
 #include <Arduino.h>
 
 typedef int32_t time_ms;
-#define TIME_MS_MAX __INT32_MAX__
-#define TIME_MS_MIN __INT32_MIN__
+#define TIME_MS_MAX INT32_MAX
+#define TIME_MS_MIN INT32_MIN
 #define PRITIMEMS PRId32
 
 typedef int64_t time_us;
-#define TIME_US_MAX __INT64_MAX__
-#define TIME_US_MIN __INT64_MIN__
+#define TIME_US_MAX INT64_MAX
+#define TIME_US_MIN INT64_MIN
 #define PRITIMEUS PRId64
+
+#define TIMELINE_MS_MAX INT32_MAX
+#define TIMELINE_MS_MIN 0
+#define PRITIMELINEMS PRId32
+
+struct timeline_ms {
+
+    timeline_ms()
+        : m_timestamp() {};
+    timeline_ms(const time_ms timestamp)
+        : m_timestamp(timestamp & 0x7fffffff) {};
+
+    inline timeline_ms& operator=(const time_ms& timestamp)
+    {
+        m_timestamp = timestamp & 0x7fffffff;
+        return *this;
+    }
+
+    inline operator time_ms() const
+    {
+        return m_timestamp;
+    }
+
+private:
+    time_ms m_timestamp;
+};
 
 class TimeTrack {
 public:
