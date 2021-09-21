@@ -30,8 +30,16 @@ struct timeline_ms {
         : m_timestamp() {};
     timeline_ms(const time_ms timestamp)
         : m_timestamp(timestamp & 0x7fffffff) {};
+    timeline_ms(const timeline_ms& other)
+        : m_timestamp(other.m_timestamp) {};
 
-    inline timeline_ms& operator=(const time_ms& timestamp)
+    inline timeline_ms& operator=(const timeline_ms& other)
+    {
+        m_timestamp = other.m_timestamp;
+        return *this;
+    }
+
+    inline timeline_ms& operator=(const time_ms timestamp)
     {
         m_timestamp = timestamp & 0x7fffffff;
         return *this;
@@ -57,6 +65,7 @@ public:
     void attach(const TimeTrack& source);
     void detach();
 
+    const timeline_ms timeline() const;
     const time_ms millis() const;
     const time_us micros() const;
     void setMillis(const time_ms timestamp);
@@ -79,7 +88,7 @@ private:
 
     const TimeTrack* m_source;
 
-    int64_t m_memory;
+    time_us m_memory;
     bool m_paused;
 };
 
@@ -100,7 +109,7 @@ class FreezableTimeTrack : public TimeTrack {
 
 private:
     bool m_freezed;
-    int64_t m_freezedAt;
+    time_us m_freezedAt;
 };
 
 typedef TimeTrack MakerMatty_TimeTrack;

@@ -60,6 +60,15 @@ void TimeTrack::detach()
     m_source = nullptr;
 }
 
+const timeline_ms /*IRAM_ATTR*/ TimeTrack::timeline() const
+{
+    if (m_paused) {
+        return timeline_ms((m_memory / 1000LL));
+    } else {
+        return timeline_ms(((sourceMicros() - m_memory) / 1000LL));
+    }
+}
+
 /**
  * @brief Get current local (object) timeMs_g in miliseconds. 1s = 1000ms
  * @return number of miliseconds based on when setTime_g() was called
@@ -67,9 +76,9 @@ void TimeTrack::detach()
 const time_ms /*IRAM_ATTR*/ TimeTrack::millis() const
 {
     if (m_paused) {
-        return (time_ms)(m_memory / 1000LL);
+        return time_ms((m_memory / 1000LL));
     } else {
-        return (time_ms)((sourceMicros() - m_memory) / 1000LL);
+        return time_ms(((sourceMicros() - m_memory) / 1000LL));
     }
 }
 
@@ -80,9 +89,9 @@ const time_ms /*IRAM_ATTR*/ TimeTrack::millis() const
 const time_us /*IRAM_ATTR*/ TimeTrack::micros() const
 {
     if (m_paused) {
-        return (time_us)m_memory;
+        return time_us(m_memory);
     } else {
-        return (time_us)(sourceMicros() - m_memory);
+        return time_us((sourceMicros() - m_memory));
     }
 }
 
@@ -91,7 +100,7 @@ const time_us /*IRAM_ATTR*/ TimeTrack::micros() const
 */
 void TimeTrack::setMillis(const time_ms timestamp)
 {
-    m_memory = m_paused ? ((int64_t)timestamp * 1000LL) : (sourceMicros() - ((int64_t)timestamp * 1000LL));
+    m_memory = m_paused ? (time_us(timestamp * 1000LL)) : (sourceMicros() - (time_us(timestamp * 1000LL)));
 }
 
 /**
@@ -99,7 +108,7 @@ void TimeTrack::setMillis(const time_ms timestamp)
 */
 void TimeTrack::setMicros(const time_us timestamp)
 {
-    m_memory = m_paused ? (int64_t)timestamp : (sourceMicros() - (int64_t)timestamp);
+    m_memory = m_paused ? time_us(timestamp) : (sourceMicros() - time_us(timestamp));
 }
 
 /**
@@ -172,7 +181,7 @@ FreezableTimeTrack::FreezableTimeTrack()
 const time_ms /*IRAM_ATTR*/ FreezableTimeTrack::millis() const
 {
     if (m_freezed) {
-        return (time_ms)(m_freezedAt / 1000LL);
+        return time_ms((m_freezedAt / 1000LL));
     } else {
         return TimeTrack::millis();
     }
