@@ -104,11 +104,27 @@ void TimeTrack::setMillis(const time_ms timestamp)
 }
 
 /**
-* @brief Set the local (object) timeMs_g in us. 1s = 1000000us
-*/
+ * @brief Set the local (object) timeMs_g in us. 1s = 1000000us
+ */
 void TimeTrack::setMicros(const time_us timestamp)
 {
     m_memory = m_paused ? time_us(timestamp) : (sourceMicros() - time_us(timestamp));
+}
+
+/**
+ * @brief Add miliseconds to the clock
+ */
+void TimeTrack::adjustMillis(const time_ms delta)
+{
+    m_memory = m_memory + time_us(delta * 1000LL);
+}
+
+/**
+ * @brief  Add microseconds to the clock
+ */
+void TimeTrack::adjustMicros(const time_us delta)
+{
+    m_memory = m_memory + time_us(delta);
 }
 
 /**

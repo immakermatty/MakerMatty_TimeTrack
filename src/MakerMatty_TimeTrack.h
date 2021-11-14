@@ -70,6 +70,8 @@ public:
     const time_us micros() const;
     void setMillis(const time_ms timestamp);
     void setMicros(const time_us timestamp);
+    void adjustMillis(const time_ms delta);
+    void adjustMicros(const time_us delta);
     void pause();
     void unpause();
 
