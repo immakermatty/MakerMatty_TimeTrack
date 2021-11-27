@@ -104,11 +104,14 @@ void TimeTrack::setMillis(const time_ms timestamp)
 {
     const int64_t memory = m_paused ? (time_us(timestamp * 1000LL)) : (sourceMicros() - (time_us(timestamp * 1000LL)));
 
-    if (m_timeJumpCb) {
-        (*m_timeJumpCb)(time_us(memory - m_memory));
-    }
-
+    const time_us delta = time_us(memory - m_memory);
     m_memory = memory;
+
+    onTimeJump(delta);
+
+    if (m_timeJumpCb) {
+        (*m_timeJumpCb)(delta);
+    }
 }
 
 /**
@@ -118,11 +121,14 @@ void TimeTrack::setMicros(const time_us timestamp)
 {
     const int64_t memory = m_paused ? time_us(timestamp) : (sourceMicros() - time_us(timestamp));
 
-    if (m_timeJumpCb) {
-        (*m_timeJumpCb)(time_us(memory - m_memory));
-    }
-
+    const time_us delta = time_us(memory - m_memory);
     m_memory = memory;
+
+    onTimeJump(delta);
+
+    if (m_timeJumpCb) {
+        (*m_timeJumpCb)(delta);
+    }
 }
 
 /**
@@ -130,10 +136,14 @@ void TimeTrack::setMicros(const time_us timestamp)
  */
 void TimeTrack::adjustMillis(const time_ms delta)
 {
-    m_memory = m_memory + time_us(delta * 1000LL);
+    const time_us delta_us = time_us(delta) * 1000LL;
+
+    m_memory = m_memory + delta_us;
+
+     onTimeJump(delta_us);
 
     if (m_timeJumpCb) {
-        (*m_timeJumpCb)(time_us(delta * 1000L));
+        (*m_timeJumpCb)(delta_us);
     }
 }
 
@@ -144,8 +154,10 @@ void TimeTrack::adjustMicros(const time_us delta)
 {
     m_memory = m_memory + time_us(delta);
 
+    onTimeJump(delta);
+
     if (m_timeJumpCb) {
-        (*m_timeJumpCb)(time_us(delta));
+        (*m_timeJumpCb)(delta);
     }
 }
 
@@ -196,7 +208,10 @@ void TimeTrack::sync(const time_us timestamp)
     this->setMicros(timestamp);
 }
 
-
+void TimeTrack::onTimeJump(TimeJumpCallback cb)
+{
+    m_timeJumpCb = cb;
+}
 
 const time_us TimeTrack::sourceMicros() const
 {

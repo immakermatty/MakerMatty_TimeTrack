@@ -75,24 +75,27 @@ public:
     void pause();
     void unpause();
 
-    typedef void (*TimeJumpCallback)(const time_us delta);
-    void onTimeJump(TimeJumpCallback cb);
-
     void sync(const TimeTrack& source);
     void sync(const time_ms timestamp);
     void sync(const time_us timestamp);
 
+    typedef void (*TimeJumpCallback)(const time_us delta);
+    void onTimeJump(TimeJumpCallback cb);
+
     /**
-	 * @brief Is the timer paused?
-	 * @returns true if it's paused, false if it's not paused.
-	 */
-    inline const bool paused() const { return m_paused; }; //getter
+     * @brief Is the timer paused?
+     * @returns true if it's paused, false if it's not paused.
+     */
+    inline const bool paused() const { return m_paused; }; // getter
+
+protected:
+    virtual void onTimeJump(const time_us delta) {};
 
 private:
     inline const time_us sourceMicros() const;
 
     const TimeTrack* m_source;
-    const TimeJumpCallback m_timeJumpCb;
+    TimeJumpCallback m_timeJumpCb;
 
     time_us m_memory;
     bool m_paused;
