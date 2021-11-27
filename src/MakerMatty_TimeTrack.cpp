@@ -11,6 +11,7 @@ bool m_paused;
  */
 TimeTrack::TimeTrack()
     : m_source(nullptr)
+    , m_timeJumpCb(nullptr)
     , m_memory(0)
     , m_paused(false)
 {
@@ -23,6 +24,7 @@ TimeTrack::TimeTrack()
  */
 TimeTrack::TimeTrack(const time_ms initial)
     : m_source(nullptr)
+    , m_timeJumpCb(nullptr)
     , m_memory(0)
     , m_paused(false)
 {
@@ -96,11 +98,17 @@ const time_us /*IRAM_ATTR*/ TimeTrack::micros() const
 }
 
 /**
-* @brief Set the local (object) timeMs_g in ms. 1s = 1000ms
-*/
+ * @brief Set the local (object) timeMs_g in ms. 1s = 1000ms
+ */
 void TimeTrack::setMillis(const time_ms timestamp)
 {
-    m_memory = m_paused ? (time_us(timestamp * 1000LL)) : (sourceMicros() - (time_us(timestamp * 1000LL)));
+    const int64_t memory = m_paused ? (time_us(timestamp * 1000LL)) : (sourceMicros() - (time_us(timestamp * 1000LL)));
+
+    if (m_timeJumpCb) {
+        (*m_timeJumpCb)(time_us(memory - m_memory));
+    }
+
+    m_memory = memory;
 }
 
 /**
@@ -108,7 +116,13 @@ void TimeTrack::setMillis(const time_ms timestamp)
  */
 void TimeTrack::setMicros(const time_us timestamp)
 {
-    m_memory = m_paused ? time_us(timestamp) : (sourceMicros() - time_us(timestamp));
+    const int64_t memory = m_paused ? time_us(timestamp) : (sourceMicros() - time_us(timestamp));
+
+    if (m_timeJumpCb) {
+        (*m_timeJumpCb)(time_us(memory - m_memory));
+    }
+
+    m_memory = memory;
 }
 
 /**
@@ -117,6 +131,10 @@ void TimeTrack::setMicros(const time_us timestamp)
 void TimeTrack::adjustMillis(const time_ms delta)
 {
     m_memory = m_memory + time_us(delta * 1000LL);
+
+    if (m_timeJumpCb) {
+        (*m_timeJumpCb)(time_us(delta * 1000L));
+    }
 }
 
 /**
@@ -125,6 +143,10 @@ void TimeTrack::adjustMillis(const time_ms delta)
 void TimeTrack::adjustMicros(const time_us delta)
 {
     m_memory = m_memory + time_us(delta);
+
+    if (m_timeJumpCb) {
+        (*m_timeJumpCb)(time_us(delta));
+    }
 }
 
 /**
