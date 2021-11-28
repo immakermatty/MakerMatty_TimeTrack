@@ -104,7 +104,7 @@ void TimeTrack::setMillis(const time_ms timestamp)
 {
     const int64_t memory = m_paused ? (time_us(timestamp * 1000LL)) : (sourceMicros() - (time_us(timestamp * 1000LL)));
 
-    const time_us delta = time_us(memory - m_memory);
+    const time_us delta = time_us(m_paused ? memory - m_memory : m_memory - memory);
     m_memory = memory;
 
     onTimeJump(delta);
@@ -121,7 +121,7 @@ void TimeTrack::setMicros(const time_us timestamp)
 {
     const int64_t memory = m_paused ? time_us(timestamp) : (sourceMicros() - time_us(timestamp));
 
-    const time_us delta = time_us(memory - m_memory);
+    const time_us delta = time_us(m_paused ? memory - m_memory : m_memory - memory);
     m_memory = memory;
 
     onTimeJump(delta);
