@@ -20,39 +20,39 @@ typedef int64_t time_us;
 #define TIME_US_MIN INT64_MIN
 #define PRITIMEUS PRId64
 
-#define TIMELINE_MS_MAX INT32_MAX
-#define TIMELINE_MS_MIN 0
-#define PRITIMELINEMS PRId32
+// #define TIMELINE_MS_MAX INT32_MAX
+// #define TIMELINE_MS_MIN 0
+// #define PRITIMELINEMS PRId32
 
-struct timeline_ms {
+// struct timeline_ms {
 
-    timeline_ms()
-        : m_timestamp() {};
-    timeline_ms(const time_ms timestamp)
-        : m_timestamp(timestamp & 0x7fffffff) {};
-    timeline_ms(const timeline_ms& other)
-        : m_timestamp(other.m_timestamp) {};
+//     timeline_ms()
+//         : m_timestamp() {};
+//     timeline_ms(const time_ms timestamp)
+//         : m_timestamp(timestamp & 0x7fffffff) {};
+//     timeline_ms(const timeline_ms& other)
+//         : m_timestamp(other.m_timestamp) {};
 
-    inline timeline_ms& operator=(const timeline_ms& other)
-    {
-        m_timestamp = other.m_timestamp;
-        return *this;
-    }
+//     inline timeline_ms& operator=(const timeline_ms& other)
+//     {
+//         m_timestamp = other.m_timestamp;
+//         return *this;
+//     }
 
-    inline timeline_ms& operator=(const time_ms timestamp)
-    {
-        m_timestamp = timestamp & 0x7fffffff;
-        return *this;
-    }
+//     inline timeline_ms& operator=(const time_ms timestamp)
+//     {
+//         m_timestamp = timestamp & 0x7fffffff;
+//         return *this;
+//     }
 
-    inline operator time_ms() const
-    {
-        return m_timestamp;
-    }
+//     inline operator time_ms() const
+//     {
+//         return m_timestamp;
+//     }
 
-private:
-    time_ms m_timestamp;
-};
+// private:
+//     time_ms m_timestamp;
+// };
 
 class TimeTrack {
 public:
@@ -65,7 +65,7 @@ public:
     void attach(const TimeTrack& source);
     void detach();
 
-    const timeline_ms timeline() const;
+    // const timeline_ms timeline() const;
     const time_ms millis() const;
     const time_us micros() const;
     void setMillis(const time_ms timestamp);

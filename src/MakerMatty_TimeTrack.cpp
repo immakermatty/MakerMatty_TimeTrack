@@ -2,9 +2,11 @@
 
 #include "MakerMatty_TimeTrack.h"
 
-const TimeTrack* m_source;
-int64_t m_memory;
-bool m_paused;
+
+// const TimeTrack* m_source;
+// int64_t m_memory;
+// bool m_paused;
+
 
 /**
  * @brief Local (object) timeMs_g tracking
@@ -62,14 +64,14 @@ void TimeTrack::detach()
     m_source = nullptr;
 }
 
-const timeline_ms /*IRAM_ATTR*/ TimeTrack::timeline() const
-{
-    if (m_paused) {
-        return timeline_ms((m_memory / 1000LL));
-    } else {
-        return timeline_ms(((sourceMicros() - m_memory) / 1000LL));
-    }
-}
+// const timeline_ms /*IRAM_ATTR*/ TimeTrack::timeline() const
+// {
+//     if (m_paused) {
+//         return timeline_ms((m_memory / 1000LL));
+//     } else {
+//         return timeline_ms(((sourceMicros() - m_memory) / 1000LL));
+//     }
+// }
 
 /**
  * @brief Get current local (object) timeMs_g in miliseconds. 1s = 1000ms
