@@ -68,16 +68,16 @@ public:
     // const timeline_ms timeline() const;
     const time_ms millis() const;
     const time_us micros() const;
-    void setMillis(const time_ms timestamp);
-    void setMicros(const time_us timestamp);
-    void adjustMillis(const time_ms delta);
-    void adjustMicros(const time_us delta);
+    void setMillis(const time_ms timestamp, const time_ms transition = 0);
+    void setMicros(const time_us timestamp, const time_ms transition = 0);
+    void adjustMillis(const time_ms delta, const time_ms transition = 0);
+    void adjustMicros(const time_us delta, const time_ms transition = 0);
     void pause();
     void unpause();
 
     void sync(const TimeTrack& source);
-    void sync(const time_ms timestamp);
-    void sync(const time_us timestamp);
+    // void sync(const time_ms timestamp);
+    // void sync(const time_us timestamp);
 
     typedef void (*TimeJumpCallback)(const time_us delta);
     void onTimeJump(TimeJumpCallback cb);
@@ -96,6 +96,10 @@ private:
 
     const TimeTrack* m_source;
     TimeJumpCallback m_timeJumpCb;
+
+    time_us m_transitionStart;
+    time_ms m_transitionDuration;
+    time_us m_transitionValue;
 
     time_us m_memory;
     bool m_paused;

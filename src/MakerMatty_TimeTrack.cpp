@@ -102,7 +102,7 @@ const time_us /*IRAM_ATTR*/ TimeTrack::micros() const
 /**
  * @brief Set the local (object) timeMs_g in ms. 1s = 1000ms
  */
-void TimeTrack::setMillis(const time_ms timestamp)
+void TimeTrack::setMillis(const time_ms timestamp, const time_ms transition)
 {
     const int64_t memory = m_paused ? (time_us(timestamp * 1000LL)) : (sourceMicros() - (time_us(timestamp * 1000LL)));
 
@@ -119,7 +119,7 @@ void TimeTrack::setMillis(const time_ms timestamp)
 /**
  * @brief Set the local (object) timeMs_g in us. 1s = 1000000us
  */
-void TimeTrack::setMicros(const time_us timestamp)
+void TimeTrack::setMicros(const time_us timestamp, const time_ms transition)
 {
     const int64_t memory = m_paused ? time_us(timestamp) : (sourceMicros() - time_us(timestamp));
 
@@ -136,13 +136,13 @@ void TimeTrack::setMicros(const time_us timestamp)
 /**
  * @brief Add miliseconds to the clock
  */
-void TimeTrack::adjustMillis(const time_ms delta)
+void TimeTrack::adjustMillis(const time_ms delta, const time_ms transition)
 {
     const time_us delta_us = time_us(delta) * 1000LL;
 
     m_memory = m_memory + delta_us;
 
-     onTimeJump(delta_us);
+    onTimeJump(delta_us);
 
     if (m_timeJumpCb) {
         (*m_timeJumpCb)(delta_us);
@@ -152,7 +152,7 @@ void TimeTrack::adjustMillis(const time_ms delta)
 /**
  * @brief  Add microseconds to the clock
  */
-void TimeTrack::adjustMicros(const time_us delta)
+void TimeTrack::adjustMicros(const time_us delta, const time_ms transition)
 {
     m_memory = m_memory + time_us(delta);
 
@@ -193,22 +193,21 @@ void TimeTrack::sync(const TimeTrack& source)
     this->setMicros(source.micros());
 }
 
+// /**
+//  * @brief Synchronizes time with source TimeTrack. The time is not linked in any way tho
+//  */
+// void TimeTrack::sync(const time_ms timestamp)
+// {
+//     this->setMillis(timestamp);
+// }
 
-/**
- * @brief Synchronizes time with source TimeTrack. The time is not linked in any way tho
- */
-void TimeTrack::sync(const time_ms timestamp)
-{
-    this->setMillis(timestamp);
-}
-
-/**
- * @brief Synchronizes time with source TimeTrack. The time is not linked in any way tho
- */
-void TimeTrack::sync(const time_us timestamp)
-{
-    this->setMicros(timestamp);
-}
+// /**
+//  * @brief Synchronizes time with source TimeTrack. The time is not linked in any way tho
+//  */
+// void TimeTrack::sync(const time_us timestamp)
+// {
+//     this->setMicros(timestamp);
+// }
 
 void TimeTrack::onTimeJump(TimeJumpCallback cb)
 {
