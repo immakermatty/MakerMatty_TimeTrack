@@ -211,6 +211,41 @@ void TimeTrack::setMillis(const uint32_t timestamp_ms, const uint32_t transition
 }
 
 /**
+ * @brief Set the local (object) timeMs_g in ms. 1s = 1000ms
+ */
+void TimeTrack::setMillis(const int64_t timestamp_ms, const uint32_t transition_ms)
+{
+    const int64_t memory = m_paused ? (int64_t(timestamp_ms * 1000LL)) : (source() - (int64_t(timestamp_ms * 1000LL)));
+
+    const time_us delta = time_us(m_paused ? memory - m_memory : m_memory - memory);
+    m_memory = memory;
+
+    onTimeJump(delta);
+
+    if (m_timeJumpCb) {
+        (*m_timeJumpCb)(delta);
+    }
+}
+
+/**
+ * @brief Set the local (object) timeMs_g in ms. 1s = 1000ms
+ */
+void TimeTrack::setMillis(const uint64_t timestamp_ms, const uint32_t transition_ms)
+{
+    const int64_t memory = m_paused ? (int64_t(timestamp_ms * 1000LL)) : (source() - (int64_t(timestamp_ms * 1000LL)));
+
+    const time_us delta = time_us(m_paused ? memory - m_memory : m_memory - memory);
+    m_memory = memory;
+
+    onTimeJump(delta);
+
+    if (m_timeJumpCb) {
+        (*m_timeJumpCb)(delta);
+    }
+}
+
+
+/**
  * @brief Set the local (object) timeMs_g in us. 1s = 1000000us
  */
 void TimeTrack::setMicros(const int64_t timestamp_us, const uint32_t transition_ms)

@@ -90,6 +90,8 @@ public:
 
     void setMillis(const int32_t timestamp_ms, const uint32_t transition_ms = 0);
     void setMillis(const uint32_t timestamp_ms, const uint32_t transition_ms = 0);
+    void setMillis(const int64_t timestamp_ms, const uint32_t transition_ms = 0);
+    void setMillis(const uint64_t timestamp_ms, const uint32_t transition_ms = 0);
     void setMicros(const int64_t timestamp_us, const uint32_t transition_ms = 0);
     void setMicros(const uint64_t timestamp_us, const uint32_t transition_ms = 0);
     void adjustMillis(const int32_t delta_ms, const uint32_t transition_ms = 0);
