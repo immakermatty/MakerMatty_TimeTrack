@@ -86,6 +86,24 @@ const time_ms /*IRAM_ATTR*/ TimeTrack::millis() const
     }
 }
 
+const uint32_t TimeTrack::millis_u32() const
+{
+    if (m_paused) {
+        return uint32_t((m_memory / 1000LL));
+    } else {
+        return uint32_t(((sourceMicros() - m_memory) / 1000LL));
+    }
+}
+
+const int32_t TimeTrack::millis_i32() const
+{
+    if (m_paused) {
+        return int32_t((m_memory / 1000LL));
+    } else {
+        return int32_t(((sourceMicros() - m_memory) / 1000LL));
+    }
+}
+
 /**
  * @brief Get current local (object) timeMs_g in microseconds. 1s = 1000000ms
  * @return number of microseconds based on when setMillis() was called
@@ -115,6 +133,24 @@ void TimeTrack::setMillis(const time_ms timestamp, const time_ms transition)
         (*m_timeJumpCb)(delta);
     }
 }
+
+/**
+ * @brief Set the local (object) timeMs_g in ms. 1s = 1000ms
+ */
+void TimeTrack::setMillis(const uint32_t timestamp, const time_ms transition)
+{
+    const int64_t memory = m_paused ? (time_us(timestamp * 1000LL)) : (sourceMicros() - (time_us(timestamp * 1000LL)));
+
+    const time_us delta = time_us(m_paused ? memory - m_memory : m_memory - memory);
+    m_memory = memory;
+
+    onTimeJump(delta);
+
+    if (m_timeJumpCb) {
+        (*m_timeJumpCb)(delta);
+    }
+}
+
 
 /**
  * @brief Set the local (object) timeMs_g in us. 1s = 1000000us

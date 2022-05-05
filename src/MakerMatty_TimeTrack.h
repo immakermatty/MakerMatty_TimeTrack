@@ -15,10 +15,20 @@ typedef int32_t time_ms;
 #define TIME_MS_MIN INT32_MIN
 #define PRITIMEMS PRId32
 
+typedef uint32_t utime_ms;
+#define UTIME_MS_MAX UINT32_MAX
+#define UTIME_MS_MIN UINT32_MIN
+#define PRIUTIMEMS PRIu32
+
 typedef int64_t time_us;
 #define TIME_US_MAX INT64_MAX
 #define TIME_US_MIN INT64_MIN
 #define PRITIMEUS PRId64
+
+typedef uint64_t utime_us;
+#define UTIME_US_MAX UINT64_MAX
+#define UTIME_US_MIN UINT64_MIN
+#define PRIUTIMEUS PRIu64
 
 // #define TIMELINE_MS_MAX INT32_MAX
 // #define TIMELINE_MS_MIN 0
@@ -67,8 +77,13 @@ public:
 
     // const timeline_ms timeline() const;
     const time_ms millis() const;
+    const uint32_t millis_u32() const;
+    const int32_t millis_i32() const;
+
     const time_us micros() const;
+
     void setMillis(const time_ms timestamp, const time_ms transition = 0);
+    void setMillis(const uint32_t timestamp, const time_ms transition = 0);
     void setMicros(const time_us timestamp, const time_ms transition = 0);
     void adjustMillis(const time_ms delta, const time_ms transition = 0);
     void adjustMicros(const time_us delta, const time_ms transition = 0);
