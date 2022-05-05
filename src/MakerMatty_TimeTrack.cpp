@@ -2,11 +2,9 @@
 
 #include "MakerMatty_TimeTrack.h"
 
-
 // const TimeTrack* m_source;
 // int64_t m_memory;
 // bool m_paused;
-
 
 /**
  * @brief Local (object) timeMs_g tracking
@@ -69,7 +67,7 @@ void TimeTrack::detach()
 //     if (m_paused) {
 //         return timeline_ms((m_memory / 1000LL));
 //     } else {
-//         return timeline_ms(((sourceMicros() - m_memory) / 1000LL));
+//         return timeline_ms(((source() - m_memory) / 1000LL));
 //     }
 // }
 
@@ -82,7 +80,7 @@ const time_ms /*IRAM_ATTR*/ TimeTrack::millis() const
     if (m_paused) {
         return time_ms((m_memory / 1000LL));
     } else {
-        return time_ms(((sourceMicros() - m_memory) / 1000LL));
+        return time_ms(((source() - m_memory) / 1000LL));
     }
 }
 
@@ -91,7 +89,7 @@ const uint32_t TimeTrack::millis_u32() const
     if (m_paused) {
         return uint32_t((m_memory / 1000LL));
     } else {
-        return uint32_t(((sourceMicros() - m_memory) / 1000LL));
+        return uint32_t(((source() - m_memory) / 1000LL));
     }
 }
 
@@ -100,7 +98,25 @@ const int32_t TimeTrack::millis_i32() const
     if (m_paused) {
         return int32_t((m_memory / 1000LL));
     } else {
-        return int32_t(((sourceMicros() - m_memory) / 1000LL));
+        return int32_t(((source() - m_memory) / 1000LL));
+    }
+}
+
+const uint64_t TimeTrack::millis_u64() const
+{
+    if (m_paused) {
+        return uint64_t((m_memory / 1000LL));
+    } else {
+        return uint64_t(((source() - m_memory) / 1000LL));
+    }
+}
+
+const int64_t TimeTrack::millis_i64() const
+{
+    if (m_paused) {
+        return int64_t((m_memory / 1000LL));
+    } else {
+        return int64_t(((source() - m_memory) / 1000LL));
     }
 }
 
@@ -113,16 +129,59 @@ const time_us /*IRAM_ATTR*/ TimeTrack::micros() const
     if (m_paused) {
         return time_us(m_memory);
     } else {
-        return time_us((sourceMicros() - m_memory));
+        return time_us((source() - m_memory));
     }
 }
+
+const uint32_t /*IRAM_ATTR*/ TimeTrack::micros_u32() const
+{
+    if (m_paused) {
+        return uint32_t(m_memory);
+    } else {
+        return uint32_t((source() - m_memory));
+    }
+}
+
+const int32_t /*IRAM_ATTR*/ TimeTrack::micros_i32() const
+{
+    if (m_paused) {
+        return int32_t(m_memory);
+    } else {
+        return int32_t((source() - m_memory));
+    }
+}
+
+const uint64_t /*IRAM_ATTR*/ TimeTrack::micros_u64() const
+{
+    if (m_paused) {
+        return uint64_t(m_memory);
+    } else {
+        return uint64_t((source() - m_memory));
+    }
+}
+
+const int64_t /*IRAM_ATTR*/ TimeTrack::micros_i64() const
+{
+    if (m_paused) {
+        return int64_t(m_memory);
+    } else {
+        return int64_t((source() - m_memory));
+    }
+}
+
+// void setMillis(const int32_t timestamp_ms, const uint32_t transition_ms = 0);
+// void setMillis(const uint32_t timestamp_ms, const uint32_t transition_ms = 0);
+// void setMicros(const int64_t timestamp_us, const uint32_t transition_ms = 0);
+// void setMicros(const uint64_t timestamp_us, const uint32_t transition_ms = 0);
+// void adjustMillis(const int32_t delta_ms, const uint32_t transition_ms = 0);
+// void adjustMicros(const int64_t delta_us, const uint32_t transition_ms = 0);
 
 /**
  * @brief Set the local (object) timeMs_g in ms. 1s = 1000ms
  */
-void TimeTrack::setMillis(const time_ms timestamp, const time_ms transition)
+void TimeTrack::setMillis(const int32_t timestamp_ms, const uint32_t transition_ms)
 {
-    const int64_t memory = m_paused ? (time_us(timestamp * 1000LL)) : (sourceMicros() - (time_us(timestamp * 1000LL)));
+    const int64_t memory = m_paused ? (int64_t(timestamp_ms * 1000LL)) : (source() - (int64_t(timestamp_ms * 1000LL)));
 
     const time_us delta = time_us(m_paused ? memory - m_memory : m_memory - memory);
     m_memory = memory;
@@ -137,9 +196,9 @@ void TimeTrack::setMillis(const time_ms timestamp, const time_ms transition)
 /**
  * @brief Set the local (object) timeMs_g in ms. 1s = 1000ms
  */
-void TimeTrack::setMillis(const uint32_t timestamp, const time_ms transition)
+void TimeTrack::setMillis(const uint32_t timestamp_ms, const uint32_t transition_ms)
 {
-    const int64_t memory = m_paused ? (time_us(timestamp * 1000LL)) : (sourceMicros() - (time_us(timestamp * 1000LL)));
+    const int64_t memory = m_paused ? (int64_t(timestamp_ms * 1000LL)) : (source() - (int64_t(timestamp_ms * 1000LL)));
 
     const time_us delta = time_us(m_paused ? memory - m_memory : m_memory - memory);
     m_memory = memory;
@@ -150,14 +209,30 @@ void TimeTrack::setMillis(const uint32_t timestamp, const time_ms transition)
         (*m_timeJumpCb)(delta);
     }
 }
-
 
 /**
  * @brief Set the local (object) timeMs_g in us. 1s = 1000000us
  */
-void TimeTrack::setMicros(const time_us timestamp, const time_ms transition)
+void TimeTrack::setMicros(const int64_t timestamp_us, const uint32_t transition_ms)
 {
-    const int64_t memory = m_paused ? time_us(timestamp) : (sourceMicros() - time_us(timestamp));
+    const int64_t memory = m_paused ? int64_t(timestamp_us) : (source() - int64_t(timestamp_us));
+
+    const time_us delta = time_us(m_paused ? memory - m_memory : m_memory - memory);
+    m_memory = memory;
+
+    onTimeJump(delta);
+
+    if (m_timeJumpCb) {
+        (*m_timeJumpCb)(delta);
+    }
+}
+
+/**
+ * @brief Set the local (object) timeMs_g in us. 1s = 1000000us
+ */
+void TimeTrack::setMicros(const uint64_t timestamp_us, const uint32_t transition_ms)
+{
+    const int64_t memory = m_paused ? int64_t(timestamp_us) : (source() - int64_t(timestamp_us));
 
     const time_us delta = time_us(m_paused ? memory - m_memory : m_memory - memory);
     m_memory = memory;
@@ -172,30 +247,30 @@ void TimeTrack::setMicros(const time_us timestamp, const time_ms transition)
 /**
  * @brief Add miliseconds to the clock
  */
-void TimeTrack::adjustMillis(const time_ms delta, const time_ms transition)
+void TimeTrack::adjustMillis(const int32_t delta_ms, const uint32_t transition_ms)
 {
-    const time_us delta_us = time_us(delta) * 1000LL;
+    const int64_t delta_us = int64_t(delta_ms) * 1000LL;
 
     m_memory = m_memory + delta_us;
 
-    onTimeJump(delta_us);
+    onTimeJump(time_us(delta_us));
 
     if (m_timeJumpCb) {
-        (*m_timeJumpCb)(delta_us);
+        (*m_timeJumpCb)(time_us(delta_us));
     }
 }
 
 /**
  * @brief  Add microseconds to the clock
  */
-void TimeTrack::adjustMicros(const time_us delta, const time_ms transition)
+void TimeTrack::adjustMicros(const int64_t delta_us, const uint32_t transition_ms)
 {
-    m_memory = m_memory + time_us(delta);
+    m_memory = m_memory + delta_us;
 
-    onTimeJump(delta);
+    onTimeJump(time_us(delta_us));
 
     if (m_timeJumpCb) {
-        (*m_timeJumpCb)(delta);
+        (*m_timeJumpCb)(time_us(delta_us));
     }
 }
 
@@ -205,7 +280,7 @@ void TimeTrack::adjustMicros(const time_us delta, const time_ms transition)
 void TimeTrack::pause()
 {
     if (!m_paused) {
-        m_memory = sourceMicros() - m_memory;
+        m_memory = source() - m_memory;
         m_paused = true;
     }
 }
@@ -216,7 +291,7 @@ void TimeTrack::pause()
 void TimeTrack::unpause()
 {
     if (m_paused) {
-        m_memory = sourceMicros() - m_memory;
+        m_memory = source() - m_memory;
         m_paused = false;
     }
 }
@@ -226,7 +301,8 @@ void TimeTrack::unpause()
  */
 void TimeTrack::sync(const TimeTrack& source)
 {
-    this->setMicros(source.micros());
+    m_memory = source.m_memory;
+    m_paused = source.m_paused;
 }
 
 // /**
@@ -250,9 +326,9 @@ void TimeTrack::onTimeJump(TimeJumpCallback cb)
     m_timeJumpCb = cb;
 }
 
-const time_us TimeTrack::sourceMicros() const
+const int64_t TimeTrack::source() const
 {
-    return (m_source != nullptr ? m_source->micros() : esp_timer_get_time());
+    return (m_source != nullptr ? m_source->micros_i64() : esp_timer_get_time());
 }
 
 //////////////////////////////////////////////////////////////////////////

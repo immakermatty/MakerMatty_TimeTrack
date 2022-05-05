@@ -1,4 +1,4 @@
-/** 
+/**
  * Author	: @makermatty (maker.matejsuchanek.cz)
  * Date		: 15-6-2020
  */
@@ -79,14 +79,21 @@ public:
     const time_ms millis() const;
     const uint32_t millis_u32() const;
     const int32_t millis_i32() const;
+    const uint64_t millis_u64() const;
+    const int64_t millis_i64() const;
 
     const time_us micros() const;
+    const uint32_t micros_u32() const;
+    const int32_t micros_i32() const;
+    const uint64_t micros_u64() const;
+    const int64_t micros_i64() const;
 
-    void setMillis(const time_ms timestamp, const time_ms transition = 0);
-    void setMillis(const uint32_t timestamp, const time_ms transition = 0);
-    void setMicros(const time_us timestamp, const time_ms transition = 0);
-    void adjustMillis(const time_ms delta, const time_ms transition = 0);
-    void adjustMicros(const time_us delta, const time_ms transition = 0);
+    void setMillis(const int32_t timestamp_ms, const uint32_t transition_ms = 0);
+    void setMillis(const uint32_t timestamp_ms, const uint32_t transition_ms = 0);
+    void setMicros(const int64_t timestamp_us, const uint32_t transition_ms = 0);
+    void setMicros(const uint64_t timestamp_us, const uint32_t transition_ms = 0);
+    void adjustMillis(const int32_t delta_ms, const uint32_t transition_ms = 0);
+    void adjustMicros(const int64_t delta_us, const uint32_t transition_ms = 0);
     void pause();
     void unpause();
 
@@ -107,7 +114,7 @@ protected:
     virtual void onTimeJump(const time_us delta) {};
 
 private:
-    inline const time_us sourceMicros() const;
+    inline const int64_t source() const;
 
     const TimeTrack* m_source;
     TimeJumpCallback m_timeJumpCb;
@@ -116,7 +123,7 @@ private:
     time_ms m_transitionDuration;
     time_us m_transitionValue;
 
-    time_us m_memory;
+    int64_t m_memory;
     bool m_paused;
 };
 
@@ -130,10 +137,10 @@ class FreezableTimeTrack : public TimeTrack {
     void unfreeze();
 
     /**
-	 * @brief Is the timer freezed?
-	 * @returns true if it's freezed, false if it's not freezed.
-	 */
-    inline const bool freezed() const { return m_freezed; }; //getter
+     * @brief Is the timer freezed?
+     * @returns true if it's freezed, false if it's not freezed.
+     */
+    inline const bool freezed() const { return m_freezed; }; // getter
 
 private:
     bool m_freezed;
