@@ -31,6 +31,19 @@ TimeTrack::TimeTrack(const time_ms initial)
     setMillis(initial);
 }
 
+/**
+ * @brief Local (object) timeMs_g tracking
+ * @param currentTime Current micros when creating this obbject
+ */
+TimeTrack::TimeTrack(const time_us initial)
+    : m_source(nullptr)
+    , m_timeJumpCb(nullptr)
+    , m_memory(0)
+    , m_paused(false)
+{
+    setMicros(initial);
+}
+
 // /**
 //  * @brief Copy contructor
 //  * @param other Other TimeTrack object to copy

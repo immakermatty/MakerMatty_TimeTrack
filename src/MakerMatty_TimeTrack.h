@@ -68,6 +68,7 @@ class TimeTrack {
 public:
     TimeTrack();
     TimeTrack(const time_ms initial);
+    TimeTrack(const time_us initial);
 
     // TimeTrack(const TimeTrack& other); // copy contructor
     // TimeTrack& TimeTrack::operator=(TimeTrack other) noexcept;
